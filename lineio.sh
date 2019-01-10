@@ -14,7 +14,7 @@ function examine()
 
 function send()
 {
-  echo "$*"
+  echo "$@"
 }
 
 function recv()

@@ -1,3 +1,4 @@
+#!/bin/bash
 # Miguel Ramos, 2019.
 # vim: set et fo+=t sw=2 sts=2 tw=100:
 
@@ -6,4 +7,4 @@
 # raw = -inlcr -igncr -icrnl
 # sane = -inlcr -igncr icrnl -ocrnl onlcr -onocr -onlret
 
-stty sane
+stty sane raw -nl
