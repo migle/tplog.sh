@@ -3,6 +3,7 @@
 # vim: set et fo+=t sw=2 sts=2 tw=100:
 
 . lineio.sh
+. can.sh
 
 function expect()
 {
@@ -51,7 +52,7 @@ function data()
         return 1
         ;;
       [0-9A-F][0-9A-F][0-9A-F]*)
-        "$1" "${REPLY#>}"
+        "$1" ${REPLY#>}
         ;;
     esac
   done
@@ -68,7 +69,7 @@ atcommand ATI ELM327
 atcommand ATH1
 
 send 2101
-data cerr
+data can
 
 #while true
 #do
