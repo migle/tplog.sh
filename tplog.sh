@@ -2,7 +2,6 @@
 # Miguel Ramos, 2019.
 # vim: set et fo+=t sw=2 sts=2 tw=100:
 
-. stty.sh
 . lineio.sh
 
 function expect()
@@ -11,15 +10,18 @@ function expect()
   while recv 5
   do
     cerr REPL: "$REPLY" "($REPL)"
-    case "$REPLY" in
+    case "${REPLY#>}" in
       $REPL*)
         cerr BINGO!
         return 0
         ;;
+      ""|"$2")
+        ;;
       "?")
-        send ""
+        return 1
         ;;
       *)
+        cerr BAD!
         examine "$REPLY"
         ;;
     esac
@@ -34,19 +36,39 @@ function atcommand()
   do
     cerr SEND: "$1"
     send "$1"
-    expect "${2:-OK}" && return 0
+    expect "${2:-OK}" "$1" && return 0
   done
   return 1
 }
 
-cerr Connecting...
-send ""
+function data()
+{
+  while recv 0.5
+  do
+    cerr DATA: "$REPLY"
+    case "${REPLY#>}" in
+      "STOPPED"*|"NO DATA"*)
+        return 1
+        ;;
+      [0-9A-F][0-9A-F][0-9A-F]*)
+        "$1" "${REPLY#>}"
+        ;;
+    esac
+  done
+  return 1
+}
+
+cerr Connected.
+send $'\r'
 expect MIGUEL
 atcommand ATD
 atcommand ATE0
 atcommand ATL0
-atcommand ATH1
 atcommand ATI ELM327
+atcommand ATH1
+
+send 2101
+data cerr
 
 #while true
 #do

@@ -1,6 +1,8 @@
 # Miguel Ramos, 2019.
 # vim: set et fo+=t sw=2 sts=2 tw=100:
 
+stty sane -echo > /dev/stderr
+
 function cerr()
 {
   echo "$@"
@@ -19,11 +21,7 @@ function send()
 
 function recv()
 {
-  read -rs -n 80 -t "${1:-1}" || return 1
+  read -s -t "${1:-1}" || return 1
   examine "$REPLY"
-  if [[ "$REPLY" =~ ">*" ]]
-  then
-    REPLY="${REPLY#>}"
-  fi
   return 0
 }
