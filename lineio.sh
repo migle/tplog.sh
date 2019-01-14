@@ -1,6 +1,8 @@
 # Miguel Ramos, 2019.
 # vim: set et fo+=t sw=2 sts=2 tw=100:
+PORT=/dev/rfcomm0
 
+exec 0< $PORT
 stty sane -echo > /dev/stderr
 
 function cerr()
@@ -17,11 +19,11 @@ function examine()
 function send()
 {
   echo "$@"
-}
+} > $PORT
 
 function recv()
 {
   read -s -t "${1:-1}" || return 1
-  examine "$REPLY"
+  TIMESTAMP=$(date +%s.%N)
   return 0
 }
