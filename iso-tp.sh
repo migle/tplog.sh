@@ -14,7 +14,6 @@ do
   SEQ="SEQ${ID}"
   IDX="IDX${ID}"
   ALL="BUF${ID}[@]"
-  echo $ID > /dev/stderr
 
   # The first byte in the CAN frame is the ISO-TP header, and its high order
   # nibble tells if this is single frame, first, continuation or flow frame.
@@ -37,7 +36,7 @@ do
 
     1[0-9A-Fa-f])
       # This is the first frame and the length is split along three nibbles.
-      N=$(((0x${DB1}<<8)|0x${DB2}))
+      N=$((((0x${DB1} - 0x10) << 8) | 0x${DB2}))
       # Pass this information on for the next frames.
       declare "${LEN}"=$N
       declare "${SEQ}"=0x21
@@ -62,12 +61,12 @@ do
       # This is a continuation frame the second nibble is sequence number.
       # Tricky, because sequence numbers only go from 0 to f used rotatively.
       N=${!LEN}
-      D=$((0x${DB1} - 0x${!SEQ}))
-      if ((D < -8 || ${!IDX} < 6 + 7*D))
+      D=$((0x${DB1} - ${!SEQ}))
+      if ((D < -8 || ${!IDX} + 7*D < 0))
       then
         D=$((D + 16))
       fi
-      declare "${SEQ}"=${DB1}
+      declare "${SEQ}"=0x${DB1}
       declare "${IDX}"=$((${!IDX} + 7*D))
       # Fill what we can on the array.
       for ((i = ${!IDX}, j = 2; i < N && j <= 8; ++i, ++j))
