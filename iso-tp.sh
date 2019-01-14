@@ -5,10 +5,11 @@
 # Read one basic CAN frame at a time. We expect the identifier (header) at the
 # first field, followed by each of the octets in separate fields.
 # Something like this: 7EA 22 B9 88 AC 39 68 05 C2
-while read ID DB1 DB2 DB3 DB4 DB5 DB6 DB7 DB8 TRASH
+while read TS ID DB1 DB2 DB3 DB4 DB5 DB6 DB7 DB8 TRASH
 do
   # For each identifier, we use a different array for buffering until we have
   # a complete ISO-TP packet. For 7EA, this array is called BUF7EA.
+  BTS="BTS${ID}"
   BUF="BUF${ID}"
   LEN="LEN${ID}"
   SEQ="SEQ${ID}"
@@ -23,6 +24,7 @@ do
       N=$((0x${DB1}))
       # We still use the buffer, to be careful about the number of bytes.
       unset "${BUF}"
+      declare "${BTS}"="${TS}"
       declare -a "${BUF}"
       for ((i = 0, j = 2; i < N && j <= 8; ++i, ++j))
       do
@@ -30,7 +32,7 @@ do
         declare "${BUF}"[i]=${!VAR:??}
       done
       # Then we output the assembled TP packet and cleanup.
-      echo "${ID}" "${!ALL}"
+      echo "${!BTS}" "${ID}" "${!ALL}"
       unset "${BUF}"
       ;;
 
@@ -43,8 +45,9 @@ do
       declare "${IDX}"=6
       # The first elements in the array are filled from the given data bytes.
       unset "${BUF}"
+      declare "${BTS}"="${TS}"
       declare -a "${BUF}"
-      for ((i = 0, j = 2; i < N && j <= 8; ++i, ++j))
+      for ((i = 0, j = 3; i < N && j <= 8; ++i, ++j))
       do
         VAR="DB${j}"
         declare "${BUF}"[i]=${!VAR:??}
@@ -77,7 +80,7 @@ do
       # If this is the last frame, output the assembled TP packet and cleanup.
       if ((i == N))
       then
-        echo "${ID}" "${!ALL}"
+        echo "${!BTS}" "${ID}" "${!ALL}"
         unset "${BUF}"
       fi
       ;;
