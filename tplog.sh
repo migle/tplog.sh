@@ -2,7 +2,7 @@
 # Miguel Ramos, 2019.
 # vim: set et fo+=t sw=2 sts=2 tw=100:
 
-LOG=$(date +tplog_%Y-%m-%d_%H-%M-%S.log)
+LOG=$(date +can_%Y-%m-%d_%H-%M-%S.log)
 
 . lineio.sh
 
@@ -79,4 +79,5 @@ do
   send 2104
   send 2105
   readdata
+  sleep 1
 done
