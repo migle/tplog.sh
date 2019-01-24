@@ -24,6 +24,7 @@ function expect()
       *)
         cerr BAD!
         examine "$REPLY"
+        return 1
         ;;
     esac
   done
@@ -44,7 +45,7 @@ function atcommand()
 
 function readdata()
 {
-  while recv 2
+  while recv 0.2
   do
     cerr DATA: "$REPLY"
     case "${REPLY#>}" in
@@ -71,13 +72,32 @@ atcommand ATH1
 atcommand ATR1
 atcommand ATS1
 
+atcommand ATSH7DF
+send 0904
+readdata
+send 0906
+readdata
+send 090A
+readdata
+atcommand ATSH7F1
+send 2101
+readdata
+
 while true
 do
+  atcommand ATSH7DF
   send 2101
+  readdata
   send 2102
+  readdata
   send 2103
+  readdata
   send 2104
+  readdata
   send 2105
+  readdata
+  atcommand ATSH7D5
+  send 2101
   readdata
   sleep 1
 done
