@@ -73,6 +73,17 @@ atcommand ATR1
 atcommand ATS1
 
 atcommand ATSH7DF
+send 0900
+readdata
+send 0904
+readdata
+send 0906
+readdata
+send 090A
+readdata
+atcommand ATSH7D5
+send 0900
+readdata
 send 0904
 readdata
 send 0906
@@ -80,7 +91,13 @@ readdata
 send 090A
 readdata
 atcommand ATSH7F1
-send 2101
+send 0900
+readdata
+send 0904
+readdata
+send 0906
+readdata
+send 090A
 readdata
 
 while true
@@ -95,6 +112,10 @@ do
   send 2104
   readdata
   send 2105
+  readdata
+  send 2180
+  readdata
+  send 2181
   readdata
   atcommand ATSH7D5
   send 2101

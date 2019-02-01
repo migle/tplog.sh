@@ -2,6 +2,27 @@
 # Miguel Ramos, 2019.
 # vim: set et fo+=t sw=2 sts=2 tw=100:
 
+hex2ascii()
+{
+  while [ -n "$1" ]
+  do
+    case "$1" in
+      [0-9a-fA-F][0-9a-fA-F])
+        if ((32 <= 0x$1 && 0x$1 <= 127))
+        then
+          echo -en "\\x$1"
+        else
+          echo -n "."
+        fi
+        ;;
+      ??|*)
+        echo -n "?"
+        ;;
+    esac
+    shift
+  done
+}
+
 # Read one basic CAN frame at a time. We expect the identifier (header) at the
 # first field, followed by each of the octets in separate fields.
 # Something like this: 7EA 22 B9 88 AC 39 68 05 C2
@@ -29,10 +50,10 @@ do
       for ((i = 0, j = 2; i < N && j <= 8; ++i, ++j))
       do
         VAR="DB${j}"
-        declare "${BUF}"[i]=${!VAR:??}
+        declare "${BUF}"[i]=${!VAR:-??}
       done
       # Then we output the assembled TP packet and cleanup.
-      echo "${!BTS}" "${ID}" "${!ALL}"
+      echo "${!BTS}" "${ID}" "${!ALL}" "\"$(hex2ascii "${!ALL}")\""
       unset "${BUF}"
       ;;
 
@@ -50,7 +71,7 @@ do
       for ((i = 0, j = 3; i < N && j <= 8; ++i, ++j))
       do
         VAR="DB${j}"
-        declare "${BUF}"[i]=${!VAR:??}
+        declare "${BUF}"[i]=${!VAR:-??}
       done
       # The rest of the array is filled with ??. This tells the length of the
       # packet and whether all bytes were received.
@@ -75,12 +96,12 @@ do
       for ((i = ${!IDX}, j = 2; i < N && j <= 8; ++i, ++j))
       do
         VAR="DB${j}"
-        declare "${BUF}"[i]=${!VAR:??}
+        declare "${BUF}"[i]=${!VAR:-??}
       done
       # If this is the last frame, output the assembled TP packet and cleanup.
       if ((i == N))
       then
-        echo "${!BTS}" "${ID}" "${!ALL}"
+        echo "${!BTS}" "${ID}" "${!ALL}" "\"$(hex2ascii "${!ALL}")\""
         unset "${BUF}"
       fi
       ;;
