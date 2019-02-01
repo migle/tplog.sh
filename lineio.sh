@@ -1,10 +1,13 @@
 # Miguel Ramos, 2019.
 # vim: set et fo+=t sw=2 sts=2 tw=100:
 PORT=/dev/rfcomm0
-ELOG=$(date +all_%Y-%m-%d_%H-%M-%S.log)
+EDIR=~/Nextcloud/Torque/tp/$(date +%Y/%m)
+ELOG=~/Nextcloud/Torque/tp/$(date +%Y/%m/all_%Y-%m-%d_%H-%M-%S.log)
 
 exec 0< $PORT
 stty sane -echo > /dev/stderr
+
+mkdir -p "${EDIR}"
 
 function cerr()
 {

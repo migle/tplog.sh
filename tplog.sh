@@ -2,8 +2,6 @@
 # Miguel Ramos, 2019.
 # vim: set et fo+=t sw=2 sts=2 tw=100:
 
-LOG=$(date +can_%Y-%m-%d_%H-%M-%S.log)
-
 . lineio.sh
 
 function expect()
@@ -45,7 +43,7 @@ function atcommand()
 
 function readdata()
 {
-  while recv 0.2
+  while recv 0.25
   do
     cerr DATA: "$REPLY"
     case "${REPLY#>}" in
@@ -53,7 +51,6 @@ function readdata()
         return 1
         ;;
       [0-9A-F][0-9A-F][0-9A-F]*)
-        echo ${TIMESTAMP} ${REPLY#>} >> ${LOG}
         echo ${TIMESTAMP} ${REPLY#>}
         ;;
     esac
