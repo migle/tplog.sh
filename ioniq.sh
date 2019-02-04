@@ -109,7 +109,7 @@ while read TS ID MODE PID A B C D E F G H I J K L M N O P Q R S T U V W X Y Z \
   BA BB BC BD BE BF BG BH BI BJ BK BL BM BN BO BP BQ BR BS BT BU BV BW BX BY BZ TRASH
 do
   case "${ID}-${MODE}${PID}" in
-    # BECM
+    # BECM - Battery Energy Control Module
     7E4-2101|7EC-6101)
       BECM["000_State of Charge BMS"]=$(testhex $E && echo $((0x$E)) \* 0.5 | bc -q)
       BECM["000_Available Charge Power"]=$(testhex $F $G && echo $((0x$F<<8|0x$G)) \* 0.01 | bc -q)
@@ -276,6 +276,7 @@ do
       ShowCELL $TS
       ;;
 
+    # VMCU - Vehicle Main Control Unit
     7E2-2101|7EA-6101)
       # bytes A to E (5) always FF E0 00 00 00 09
       VMCU["003_VMCU P"]=$(testhex $F && echo $(Bit $F 0))
@@ -306,7 +307,9 @@ do
     7E3-2103|7EB-6103)
       ;;
 
+    # BCCM - Battery Charge Control Module
     7E5-2101|7ED-6101)
+      BCCM[""]
       ;;
     7E5-2102|7ED-6102)
       ;;
